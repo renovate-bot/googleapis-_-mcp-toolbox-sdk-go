@@ -228,5 +228,4 @@ func loadManifest(ctx context.Context, url string, httpClient *http.Client,
 		return nil, fmt.Errorf("unable to parse manifest correctly: %w", err)
 	}
 	return &manifest, nil
-
 }
