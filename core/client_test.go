@@ -205,6 +205,7 @@ func TestClientOptions(t *testing.T) {
 		if !testConfig.Strict {
 			t.Error("The first tool option (Strict=true) was not stored correctly.")
 		}
+
 	})
 
 	// Test that options are correctly applied during construction
@@ -421,7 +422,6 @@ func TestNegativeAndEdgeCases(t *testing.T) {
 	t.Run("LoadTool fails when a nil ToolOption is provided", func(t *testing.T) {
 
 		client, _ := NewToolboxClient(server.URL)
-
 		_, err := client.LoadTool("any-tool", context.Background(), nil)
 
 		if err == nil {

@@ -464,7 +464,7 @@ func TestNewToolConfig(t *testing.T) {
 	if config.BoundParams == nil {
 		t.Error("Expected BoundParams map to be initialized, but it was nil")
 	}
-  
+
 	if config.Strict != false {
 		t.Errorf("Expected Strict to be false, but got %t", config.Strict)
 	}

@@ -95,7 +95,6 @@ func identifyAuthRequirements(
 	for service := range usedServices {
 		usedServicesSlice = append(usedServicesSlice, service)
 	}
-
 	return requiredAuthnParams, requiredAuthzTokens, usedServicesSlice
 }
 
