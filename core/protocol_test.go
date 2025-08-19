@@ -340,6 +340,22 @@ func TestValidateTypeObject(t *testing.T) {
 		if err := schema.validateType(invalidInput); err == nil {
 			t.Errorf("Expected an error for non-map input, but got nil")
 		}
+		
+		// Nested maps are invalid (addiitionalProperties is true)
+		nestedMapInput := map[string]any {
+			"key_map": map[string]any{"id": 1},
+		}
+		if err := schema.validateType(nestedMapInput); err == nil {
+			t.Errorf("Expected an error for nested map input, but got nil")
+		}
+
+		// Nested arrays in maps are invalid (addiitionalProperties is true)
+		nestedArrayInput := map[string]any {
+			"key_map": []string{"id", "number"},
+		}
+		if err := schema.validateType(nestedArrayInput); err == nil {
+			t.Errorf("Expected an error for array in map input, but got nil")
+		}
 	})
 
 	t.Run("typed object validation", func(t *testing.T) {
@@ -393,6 +409,38 @@ func TestValidateTypeObject(t *testing.T) {
 					t.Errorf("Expected an error for invalid input, but got nil")
 				}
 			})
+		}
+	})
+
+	t.Run("Fail for object valueType maps", func(t *testing.T) {
+
+		// This schema itself is invalid so there is no valid test case
+		schema := ParameterSchema{
+			Name:                 "test_map",
+			Type:                 "object",
+			AdditionalProperties: &ParameterSchema{Type: "object"},
+		}
+
+		invalidInput := map[string]any{"feature_flag": map[string]any{"id": "123"},}
+		// Test that invalid input fails
+		if err := schema.validateType(invalidInput); err == nil {
+			t.Errorf("Expected an error for invalid input, but got nil")
+		}
+	})
+
+	t.Run("Fail for array valueType maps", func(t *testing.T) {
+
+		// This schema itself is invalid so there is no valid test case
+		schema := ParameterSchema{
+			Name:                 "test_map",
+			Type:                 "object",
+			AdditionalProperties: &ParameterSchema{Type: "array"},
+		}
+
+		invalidInput := map[string]any{"feature_flag": []string{"id", "number"},}
+		// Test that invalid input fails
+		if err := schema.validateType(invalidInput); err == nil {
+			t.Errorf("Expected an error for invalid input, but got nil")
 		}
 	})
 
