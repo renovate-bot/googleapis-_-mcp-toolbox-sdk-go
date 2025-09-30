@@ -22,7 +22,7 @@ steps:
       - name: "go"
         path: "/gopath"
     script: |
-      go get -d ./...
+      go mod tidy
 
   - id: "run-unit-tests"
     name: golang:1
@@ -33,7 +33,7 @@ steps:
       - name: "go"
         path: "/gopath"
     script: |
-      go test -tags=unit ./core/... -v -race
+      go test -tags=unit -coverprofile=coverage-unit.out -covermode=atomic ./core/... -v -race
 
   - id: "run-core-e2e-tests"
     name: golang:1
@@ -47,7 +47,7 @@ steps:
       - name: "go"
         path: "/gopath"
     script: |
-      go test -tags=e2e ./core/... -v -race
+      go test -tags=e2e -coverprofile=coverage-e2e.out -covermode=atomic ./core/... -v -race
 
   - id: "run-tbgenkit-tests"
     name: golang:1
@@ -61,7 +61,47 @@ steps:
       - name: "go"
         path: "/gopath"
     script: |
-      go test ./tbgenkit/... -v -race
+      go test -coverprofile=coverage-tbgenkit.out -covermode=atomic ./tbgenkit/... -v -race
+
+  - id: "check-individual-coverage"
+    name: golang:1
+    waitFor: ["run-unit-tests", "run-core-e2e-tests", "run-tbgenkit-tests"]
+    script: |
+      #!/bin/bash
+      set -e 
+
+      check_coverage() {
+        local file=$1
+        local test_name=$2
+        local enforce_threshold=$3 # "true" or "false"
+        local threshold=90.0
+
+        if [ ! -f "$file" ]; then
+          echo "Warning: Coverage file $file not found for $test_name. Skipping."
+          return
+        fi
+
+        echo "Processing coverage for $test_name from $file..."
+        
+        go tool cover -func="$file" | awk -v test_name="$test_name" -v threshold="$threshold" -v enforce="$enforce_threshold" '
+          /total:/ {
+            coverage = $3;
+            sub(/%/, "", coverage);
+            print test_name " code coverage: " $3;
+            if (enforce == "true" && coverage < threshold) {
+              print "Error: " test_name " code coverage is " $3 ", which is below the " threshold "% threshold.";
+              exit 1;
+            }
+          }
+        '
+      }
+
+      check_coverage "coverage-unit.out" "Unit Tests (core)" "true"
+      
+      check_coverage "coverage-e2e.out" "E2E Tests (core)" "false"
+      check_coverage "coverage-tbgenkit.out" "TBGenKit Tests" "false"
+
+      echo "All required coverage checks passed."
 
 options:
   logging: CLOUD_LOGGING_ONLY
