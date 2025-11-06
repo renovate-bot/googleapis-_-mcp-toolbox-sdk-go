@@ -14,7 +14,7 @@
 
 steps:
   - id: "install-dependencies"
-    name: golang:1
+    name: golang:1.24.4
     waitFor: ["-"]
     env:
       - "GOPATH=/gopath"
@@ -25,7 +25,7 @@ steps:
       go mod tidy
 
   - id: "run-unit-tests"
-    name: golang:1
+    name: golang:1.24.4
     waitFor: ["install-dependencies"]
     env:
       - "GOPATH=/gopath"
@@ -36,7 +36,7 @@ steps:
       go test -tags=unit -coverprofile=coverage-unit.out -covermode=atomic ./core/... -v -race
 
   - id: "run-core-e2e-tests"
-    name: golang:1
+    name: golang:1.24.4
     waitFor: ["install-dependencies"]
     env:
       - "GOPATH=/gopath"
@@ -50,7 +50,7 @@ steps:
       go test -tags=e2e -coverprofile=coverage-e2e.out -covermode=atomic ./core/... -v -race
 
   - id: "run-tbgenkit-tests"
-    name: golang:1
+    name: golang:1.24.4
     waitFor: ["install-dependencies"]
     env:
       - "GOPATH=/gopath"
@@ -63,12 +63,26 @@ steps:
     script: |
       go test -coverprofile=coverage-tbgenkit.out -covermode=atomic ./tbgenkit/... -v -race
 
+  - id: "run-tbadk-tests"
+    name: golang:1.24.4
+    waitFor: ["install-dependencies"]
+    env:
+      - "GOPATH=/gopath"
+      - TOOLBOX_VERSION=$_TOOLBOX_VERSION
+      - GOOGLE_CLOUD_PROJECT=$PROJECT_ID
+      - TOOLBOX_MANIFEST_VERSION=$_TOOLBOX_MANIFEST_VERSION
+    volumes:
+      - name: "go"
+        path: "/gopath"
+    script: |
+      go test -coverprofile=coverage-tbadk.out -covermode=atomic ./tbadk/... -v -race
+
   - id: "check-individual-coverage"
-    name: golang:1
-    waitFor: ["run-unit-tests", "run-core-e2e-tests", "run-tbgenkit-tests"]
+    name: golang:1.24.4
+    waitFor: ["run-unit-tests", "run-core-e2e-tests", "run-tbgenkit-tests", "run-tbadk-tests"]
     script: |
       #!/bin/bash
-      set -e 
+      set -e
 
       check_coverage() {
         local file=$1
@@ -82,7 +96,6 @@ steps:
         fi
 
         echo "Processing coverage for $test_name from $file..."
-        
         go tool cover -func="$file" | awk -v test_name="$test_name" -v threshold="$threshold" -v enforce="$enforce_threshold" '
           /total:/ {
             coverage = $3;
@@ -97,9 +110,10 @@ steps:
       }
 
       check_coverage "coverage-unit.out" "Unit Tests (core)" "true"
-      
+
       check_coverage "coverage-e2e.out" "E2E Tests (core)" "false"
       check_coverage "coverage-tbgenkit.out" "TBGenKit Tests" "false"
+      check_coverage "coverage-tbadk.out" "TBADK Tests" "false"
 
       echo "All required coverage checks passed."
 
