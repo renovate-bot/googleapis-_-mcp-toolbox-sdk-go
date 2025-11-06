@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/mcp-toolbox-sdk-go/compare/v0.3.0...v0.4.0) (2025-11-06)
+
+
+### Features
+* **tbadk:** Add the new tbadk package to integrate MCP Toolbox Go SDK seamlessly with ADK Go ([#94](https://github.com/googleapis/mcp-toolbox-sdk-go/issues/94)) ([#95](https://github.com/googleapis/mcp-toolbox-sdk-go/pull/95)) ([#96](https://github.com/googleapis/mcp-toolbox-sdk-go/pull/96)) ([#97](https://github.com/googleapis/mcp-toolbox-sdk-go/pull/97))
+
+
 ## [0.3.0](https://github.com/googleapis/mcp-toolbox-sdk-go/compare/v0.2.0...v0.3.0) (2025-08-20)
 
 
