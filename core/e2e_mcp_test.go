@@ -44,6 +44,7 @@ var protocolsToTest = []protocolTestCase{
 	{name: "v20241105", protocol: core.MCPv20241105},
 	{name: "v20250326", protocol: core.MCPv20250326},
 	{name: "v20250618", protocol: core.MCPv20250618},
+	{name: "v20251125", protocol: core.MCPv20251125},
 	{name: "MCP Alias (Latest)", protocol: core.MCP},
 }
 
@@ -134,7 +135,7 @@ func TestMCP_Basic(t *testing.T) {
 				// Determine which protocol to check against
 				protocolToCheck := proto.protocol
 				if proto.isDefault {
-					protocolToCheck = core.MCPv20250618 // Default should match latest
+					protocolToCheck = core.MCPv20251125 // Default should match latest
 				}
 
 				switch protocolToCheck {
@@ -154,6 +155,12 @@ func TestMCP_Basic(t *testing.T) {
 					assert.Equal(t, "application/json", headers.Get("Accept"), "v20250618 must request JSON only")
 					assert.Empty(t, headers.Get("Mcp-Session-Id"), "v20250618 should not include Mcp-Session-Id")
 					assert.Equal(t, "2025-06-18", headers.Get("MCP-Protocol-Version"), "v20250618 must send correct protocol version header")
+
+				case core.MCPv20251125:
+					// v2025-11-25: Must send Accept AND Protocol Version
+					assert.Equal(t, "application/json", headers.Get("Accept"), "v20251125 must request JSON only")
+					assert.Empty(t, headers.Get("Mcp-Session-Id"), "v20251125 should not include Mcp-Session-Id")
+					assert.Equal(t, "2025-11-25", headers.Get("MCP-Protocol-Version"), "v20251125 must send correct protocol version header")
 				}
 			})
 
