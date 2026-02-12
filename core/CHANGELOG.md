@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.0](https://github.com/googleapis/mcp-toolbox-sdk-go/compare/github.com/googleapis/mcp-toolbox-sdk-go/core-v0.5.1...github.com/googleapis/mcp-toolbox-sdk-go/core-v0.6.0) (2026-02-12)
+## [0.6.1](https://github.com/googleapis/mcp-toolbox-sdk-go/compare/github.com/googleapis/mcp-toolbox-sdk-go/core-v0.5.1...github.com/googleapis/mcp-toolbox-sdk-go/core-v0.6.1) (2026-02-12)
 
 > [!IMPORTANT]
 > **Breaking Change Notice**: As of version `0.6.0`, this repository has transitioned to a multi-module structure.
