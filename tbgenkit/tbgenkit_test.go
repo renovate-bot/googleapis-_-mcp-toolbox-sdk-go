@@ -510,6 +510,7 @@ func TestToGenkitTool_OptionalParams(t *testing.T) {
 						"data": map[string]any{
 							"description": "The row to narrow down the search.",
 							"type":        "string",
+							"default":     "row2",
 						},
 						"email": map[string]any{
 							"description": "The email to search for.",
@@ -518,6 +519,7 @@ func TestToGenkitTool_OptionalParams(t *testing.T) {
 						"id": map[string]any{
 							"description": "The id to narrow down the search.",
 							"type":        "integer",
+							"default":     0.0, // TODO: Re-confirm Genkit bug which parses integer as float https://github.com/genkit-ai/genkit/issues/3414
 						}},
 					"required": []any{"email"},
 				}

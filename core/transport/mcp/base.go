@@ -218,6 +218,10 @@ func parseProperty(name string, definitionMap map[string]any, isRequired bool) t
 		Required:    isRequired,
 	}
 
+	if defaultValue, ok := definitionMap["default"]; ok {
+		param.Default = defaultValue
+	}
+
 	switch param.Type {
 	case "object":
 		if ap, ok := definitionMap["additionalProperties"]; ok {
