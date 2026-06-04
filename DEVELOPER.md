@@ -84,6 +84,60 @@ This project uses `golangci-lint`.
 Releases are managed by **Release Please**.
 *   Each module (`core`, `tbadk`, `tbgenkit`) is released independently.
 *   Tags will be in the format `module/vX.Y.Z` (e.g., `core/v0.6.0`).
+*   Before releasing, add a `[[params.versions.<pkg>]]` block for the new version to
+    `docs-site/hugo.toml` so it appears in the API reference version picker. See
+    [Adding a version to the picker](#adding-a-version-to-the-picker).
+
+## API Reference Documentation
+
+The API reference is published to [go.mcp-toolbox.dev](https://go.mcp-toolbox.dev).
+It is generated with [`gomarkdoc`](https://github.com/princjef/gomarkdoc) and
+rendered by [Hugo](https://gohugo.io/) + [Docsy](https://www.docsy.dev/) from the
+`docs-site/` directory. Docs are built **per package, per version** and served at
+`/<package>/<version>/` (e.g. `/core/v1.0.0/`), with a `/<package>/latest/`
+redirect to the newest release.
+
+### Workflows
+
+The `api-docs.yml` workflow deploys to the `gh-pages` branch. It runs only on
+the upstream repository and uses the `api-docs-deploy` concurrency group, so it
+never races another deploy.
+
+The automatic flow is as follows:
+*   Push to `main` (or manual dispatch) → builds all three packages as `dev`.
+*   Push of a per-package tag `<pkg>/vX.Y.Z` → builds that one version **and**
+    rebuilds the root README landing page.
+*   Other tags are skipped.
+
+### Adding a version to the picker
+
+Before each **new release**, add a `[[params.versions.<pkg>]]` block for the version
+to `docs-site/hugo.toml` (newest first). On a successful release, the tag is created
+automatically and triggers the `api-docs.yml` workflow, which builds and deploys
+that version.
+
+### Backfilling old docs
+
+The **`api-docs-backfill.yml`** (API Reference Backfill) workflow runs on demand and
+builds **one historical version per run**. Use it to build any version whose docs
+are missing or whose deployment failed.
+
+Trigger it from the Actions tab, or with:
+
+```bash
+gh workflow run api-docs-backfill.yml -f package=core -f version=v1.0.0
+```
+
+### Building locally
+
+```bash
+# Build a single package/version (base URL must end in a slash).
+./scripts/generate-api-docs.sh core dev http://localhost:8080/
+
+# Serve the output.
+(cd docs-site/public && python3 -m http.server 8080)
+# → http://localhost:8080/core/dev/
+```
 
 ## Further Information
 
