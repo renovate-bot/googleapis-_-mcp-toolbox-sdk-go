@@ -15,7 +15,15 @@ title: "MCP Toolbox Go SDK"
 type: docs
 ---
 EOF
-cat README.md >> "$CONTENT_DIR/_index.md"
+# Strip the README's leading H1 and its hand-maintained TOC block before
+# appending: Docsy already renders the page title as an H1 and an "On this page"
+# TOC, so leaving them in would duplicate both on the landing page.
+awk '
+  /<!-- TOC -->/ { intoc = 1 }
+  intoc { if (/<!-- \/TOC -->/) intoc = 0; next }
+  !h1done && /^# / { h1done = 1; next }
+  { print }
+' README.md >> "$CONTENT_DIR/_index.md"
 
 cd docs-site
 hugo \
