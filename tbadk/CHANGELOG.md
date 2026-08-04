@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/googleapis/mcp-toolbox-sdk-go/compare/tbadk/v1.0.0...tbadk/v1.1.0) (2026-08-04)
+
+
+### Features
+
+* **core:** add MCP 2026 (July spec) stateless protocol support and auto-negotiation ([#317](https://github.com/googleapis/mcp-toolbox-sdk-go/issues/317)) ([be1e47a](https://github.com/googleapis/mcp-toolbox-sdk-go/commit/be1e47a551bfe300733480488fd6ff37d2e04451))
+
 ## [1.0.0](https://github.com/googleapis/mcp-toolbox-sdk-go/compare/tbadk/v0.8.0...tbadk/v1.0.0) (2026-07-09)
 
 
